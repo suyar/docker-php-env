@@ -1,0 +1,196 @@
+version: "3"
+
+services:
+  mysql8:
+    image: mysql:${MYSQL8_VERSION}
+    environment:
+      TZ: ${TZ}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+    volumes:
+      - ${DIR_DATA}/mysql8:/var/lib/mysql
+      - ${DIR_SERVICES}/mysql/mysql8.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ${DIR_LOGS}/mysql/8:/var/log/mysql
+    ports:
+      - "${MYSQL8_HOST_PORT}:3306"
+    networks:
+      - default
+    restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+  mysql5:
+    image: mysql:${MYSQL5_VERSION}
+    environment:
+      TZ: ${TZ}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+    volumes:
+      - ${DIR_DATA}/mysql5:/var/lib/mysql
+      - ${DIR_SERVICES}/mysql/mysql5.cnf:/etc/mysql/conf.d/mysql.cnf
+      - ${DIR_LOGS}/mysql/5:/var/log/mysql
+    ports:
+      - "${MYSQL5_HOST_PORT}:3306"
+    networks:
+      - default
+    restart: unless-stopped
+    security_opt:
+      - seccomp:unconfined
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+  redis:
+    image: redis:${REDIS_VERSION}
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - ${DIR_DATA}/redis:/data
+      - ${DIR_SERVICES}/redis/redis.conf:/etc/redis.conf
+      - ${DIR_LOGS}/mysql5:/var/log/mysql
+    ports:
+      - "${REDIS_HOST_PORT}:6379"
+    command: ["redis-server", "/etc/redis.conf"]
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+  memcached:
+    image: memcached:${MEMCACHED_VERSION}
+    environment:
+      TZ: ${TZ}
+    ports:
+      - "${MEMCACHED_HOST_PORT}:11211"
+    command: ["memcached", "-m", "${MEMCACHED_MEMORY}"]
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+  php81:
+    image: suyar/php:8.1-integration
+    environment:
+      TZ: ${TZ}
+      COMPOSER_ALLOW_SUPERUSER: 1
+      COMPOSER_MEMORY_LIMIT: -1
+      COMPOSER_HOME: /tmp/composer
+    volumes:
+      - ${DIR_SERVICES}/php/81/php.ini:/usr/local/etc/php/php.ini
+      - ${DIR_SERVICES}/php/81/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
+      - ${DIR_SERVICES}/php/81/supervisor.conf:/etc/supervisor/conf.d/service.conf
+      - ${DIR_DATA}/composer:/tmp/composer
+      - ${DIR_LOGS}/php/81/supervisor:/var/log/supervisor
+      - ${DIR_LOGS}/php/81/log:/var/log/php
+      - ${DIR_SOURCE}:/www
+    working_dir: /www
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+  php80:
+    image: suyar/php:8.0-integration
+    environment:
+      TZ: ${TZ}
+      COMPOSER_ALLOW_SUPERUSER: 1
+      COMPOSER_MEMORY_LIMIT: -1
+      COMPOSER_HOME: /tmp/composer
+    volumes:
+      - ${DIR_SERVICES}/php/80/php.ini:/usr/local/etc/php/php.ini
+      - ${DIR_SERVICES}/php/80/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
+      - ${DIR_SERVICES}/php/80/supervisor.conf:/etc/supervisor/conf.d/service.conf
+      - ${DIR_DATA}/composer:/tmp/composer
+      - ${DIR_LOGS}/php/80/supervisor:/var/log/supervisor
+      - ${DIR_LOGS}/php/80/log:/var/log/php
+      - ${DIR_SOURCE}:/www
+    working_dir: /www
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+  php74:
+    image: suyar/php:7.4-integration
+    environment:
+      TZ: ${TZ}
+      COMPOSER_ALLOW_SUPERUSER: 1
+      COMPOSER_MEMORY_LIMIT: -1
+      COMPOSER_HOME: /tmp/composer
+    volumes:
+      - ${DIR_SERVICES}/php/74/php.ini:/usr/local/etc/php/php.ini
+      - ${DIR_SERVICES}/php/74/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
+      - ${DIR_SERVICES}/php/74/supervisor.conf:/etc/supervisor/conf.d/service.conf
+      - ${DIR_DATA}/composer:/tmp/composer
+      - ${DIR_LOGS}/php/74/supervisor:/var/log/supervisor
+      - ${DIR_LOGS}/php/74/log:/var/log/php
+      - ${DIR_SOURCE}:/www
+    working_dir: /www
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+  php73:
+    image: suyar/php:7.3-integration
+    environment:
+      TZ: ${TZ}
+      COMPOSER_ALLOW_SUPERUSER: 1
+      COMPOSER_MEMORY_LIMIT: -1
+      COMPOSER_HOME: /tmp/composer
+    volumes:
+      - ${DIR_SERVICES}/php/73/php.ini:/usr/local/etc/php/php.ini
+      - ${DIR_SERVICES}/php/73/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
+      - ${DIR_SERVICES}/php/73/supervisor.conf:/etc/supervisor/conf.d/service.conf
+      - ${DIR_DATA}/composer:/tmp/composer
+      - ${DIR_LOGS}/php/73/supervisor:/var/log/supervisor
+      - ${DIR_LOGS}/php/73/log:/var/log/php
+      - ${DIR_SOURCE}:/www
+    working_dir: /www
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+networks:
+  default:
+    driver: bridge
