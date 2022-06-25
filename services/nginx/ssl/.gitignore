@@ -1,0 +1,4 @@
+*
+!.gitignore
+!default.crt
+!default.key
