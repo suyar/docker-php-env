@@ -54,7 +54,6 @@ services:
     volumes:
       - ${DIR_DATA}/redis:/data
       - ${DIR_SERVICES}/redis/redis.conf:/etc/redis.conf
-      - ${DIR_LOGS}/mysql5:/var/log/mysql
     ports:
       - "${REDIS_HOST_PORT}:6379"
     command: ["redis-server", "/etc/redis.conf"]
