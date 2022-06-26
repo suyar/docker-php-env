@@ -222,7 +222,7 @@ services:
     volumes:
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
       - ${DIR_DATA}/rabbitmq:/var/lib/rabbitmq
-      - ${DIR_SERVICES}/rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+      - ${DIR_SERVICES}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
       - ${DIR_SERVICES}/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
       - ${DIR_LOGS}/rabbitmq:/var/log/rabbitmq
     hostname: ${RABBITMQ_HOSTNAME}
