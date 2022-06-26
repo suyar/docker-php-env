@@ -213,6 +213,31 @@ services:
         max-size: "10m"
         max-file: "1"
 
+  rabbitmq:
+    image: rabbitmq:${RABBITMQ_VERSION}
+    environment:
+      TZ: ${TZ}
+      RABBITMQ_DEFAULT_USER:
+      RABBITMQ_DEFAULT_PASS:
+    volumes:
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+      - ${DIR_DATA}/rabbitmq:/var/lib/rabbitmq
+      - ${DIR_SERVICES}/rabbitmq/rabbitmq.config:/etc/rabbitmq/rabbitmq.config
+      - ${DIR_SERVICES}/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
+      - ${DIR_LOGS}/rabbitmq:/var/log/rabbitmq
+    hostname: ${RABBITMQ_HOSTNAME}
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGE_PORT}:15672"
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
 networks:
   default:
     driver: bridge
