@@ -260,6 +260,28 @@ services:
         max-size: "10m"
         max-file: "1"
 
+  elasticsearch:
+    image: elasticsearch:${ELASTICSEARCH_VERSION}
+    environment:
+      - TZ=${TZ}
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    volumes:
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+      - ${DIR_DATA}/elasticsearch:/usr/share/elasticsearch/data
+      - ${DIR_SERVICES}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    hostname: elasticsearch
+    ports:
+      - "${ELASTICSEARCH_HOST_PORT}:9200"
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
 networks:
   default:
     driver: bridge
