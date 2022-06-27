@@ -202,8 +202,8 @@ services:
       - ${DIR_SOURCE}:/www
     working_dir: /www
     ports:
-      - "${NGINX_HTTP_PORT}:80"
-      - "${NGINX_HTTPS_PORT}:443"
+      - "${NGINX_HTTP_HOST_PORT}:80"
+      - "${NGINX_HTTPS_HOST_PORT}:443"
     networks:
       - default
     restart: unless-stopped
@@ -227,8 +227,30 @@ services:
       - ${DIR_LOGS}/rabbitmq:/var/log/rabbitmq
     hostname: ${RABBITMQ_HOSTNAME}
     ports:
-      - "${RABBITMQ_PORT}:5672"
-      - "${RABBITMQ_MANAGE_PORT}:15672"
+      - "${RABBITMQ_HOST_PORT}:5672"
+      - "${RABBITMQ_MANAGE_HOST_PORT}:15672"
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+  mongodb:
+    image: mongo:${MONGODB_VERSION}
+    environment:
+      TZ: ${TZ}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_INITDB_ROOT_PASSWORD}
+    volumes:
+      - ${DIR_DATA}/mongodb:/data/db
+      - ${DIR_SERVICES}/mongodb/mongod.conf:/etc/mongo/mongod.conf
+      - ${DIR_LOGS}/mongodb:/var/log/mongodb
+    ports:
+      - "${MONGODB_HOST_PORT}:27017"
+    command: ["--config", "/etc/mongo/mongod.conf"]
     networks:
       - default
     restart: unless-stopped
