@@ -47,6 +47,27 @@ services:
         max-size: "10m"
         max-file: "1"
 
+  phpmyadmin:
+    image: phpmyadmin:${PHPMYADMIN_VERSION}
+    environment:
+      TZ: ${TZ}
+      PMA_HOSTS: ${PHPMYADMIN_PMA_HOSTS}
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    volumes:
+      - ${DIR_SERVICES}/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+    ports:
+      - "${PHPMYADMIN_HOST_PORT}:80"
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
   redis:
     image: redis:${REDIS_VERSION}
     environment:
