@@ -225,7 +225,7 @@ services:
       - ${DIR_SERVICES}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
       - ${DIR_SERVICES}/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
       - ${DIR_LOGS}/rabbitmq:/var/log/rabbitmq
-    hostname: ${RABBITMQ_HOSTNAME}
+    hostname: rabbitmq
     ports:
       - "${RABBITMQ_HOST_PORT}:5672"
       - "${RABBITMQ_MANAGE_HOST_PORT}:15672"
