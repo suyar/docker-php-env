@@ -343,6 +343,25 @@ services:
         max-size: "10m"
         max-file: "1"
 
+  kibana:
+    image: kibana:${ELASTICSEARCH_VERSION}
+    environment:
+      TZ: ${TZ}
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+      I18N_LOCALE: ${kIBANA_I18N_LOCALE}
+    volumes:
+      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+    ports:
+      - "${kIBANA_HOST_PORT}:5601"
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
 networks:
   default:
     driver: bridge
