@@ -222,7 +222,9 @@ services:
     cap_add:
       - SYS_PTRACE
     networks:
-      - default
+      default:
+        aliases:
+          - example.laravel.me
     restart: unless-stopped
     logging:
       driver: "json-file"
