@@ -336,8 +336,8 @@ root@08240e17170e:/www# composer install
 
 ```
 # sudo docker-compose down
-# ./dpe.sh clean
-# ./dpe.sh init
+# sudo ./dpe.sh clean
+# sudo ./dpe.sh init
 ```
 
 ## License
