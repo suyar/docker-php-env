@@ -103,6 +103,7 @@
 │   └── redis                   Redis 配置目录
 ├── .env.example                .env 变量示例配置
 ├── docker-compose.yml.example  docker-compose 示例
+├── dpe.sh                      初始化脚本
 └── www                         默认项目代码存放目录
 ```
 
