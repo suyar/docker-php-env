@@ -97,7 +97,7 @@
 │   │   ├── 73                  PHP7.3 配置目录
 │   │   ├── 74                  PHP7.4 配置目录
 │   │   ├── 80                  PHP8.0 配置目录
-│   │   └── 81                  PHP7.1 配置目录
+│   │   └── 81                  PHP8.1 配置目录
 │   ├── phpmyadmin              phpMyAdmin 配置目录
 │   ├── rabbitmq                Rabbitmq 配置目录
 │   └── redis                   Redis 配置目录
