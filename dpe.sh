@@ -34,22 +34,6 @@ LOGS_DIRS=(
     php/81/supervisor
     rabbitmq
 )
-# 服务子目录
-LOGS_DIRS=(
-    elasticsearch
-    mongodb
-    mysql
-    nginx
-    php/73/log
-    php/73/supervisor
-    php/74/log
-    php/74/supervisor
-    php/80/log
-    php/80/supervisor
-    php/81/log
-    php/81/supervisor
-    rabbitmq
-)
 
 # 输出
 message() {
