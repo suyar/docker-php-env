@@ -1,0 +1,91 @@
+# docker-php-env docker-compose.yml 绝对路径
+DPE_COMPOSE=/home/suyar/repo/suyar/github/docker-php-env/docker-compose.yml
+# docker-php-env 挂载的 DIR_SOURCE 绝对路径
+DPE_SOURCE=/home/suyar/repo
+
+dpe_workdir() {
+    local cwd=$PWD
+    local workdir
+    local subdir
+
+    if [[ ${cwd} =~ ^${DPE_SOURCE}/?$ ]]; then
+        workdir=/www
+    elif [[ ${cwd} =~ ^${DPE_SOURCE}/.+ ]]; then
+        subdir=${cwd#${DPE_SOURCE}}
+        if [[ -n $subdir ]]; then
+            workdir=/www${subdir}
+        fi
+    fi
+
+    echo $workdir
+}
+
+tophp() {
+    if [[ $# -lt 1 ]]; then
+        local version=php81
+    else
+        local version=$1
+    fi
+
+    local workdir=$(dpe_workdir)
+
+    if [[ -z $workdir ]]; then
+        workdir=/www
+    fi
+
+    docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" bash
+}
+
+alias tophp81='tophp php81'
+alias tophp80='tophp php80'
+alias tophp74='tophp php74'
+alias tophp73='tophp php73'
+
+tonginx() {
+    local workdir=$(dpe_workdir)
+
+    if [[ -z $workdir ]]; then
+        workdir=/www
+    fi
+
+    docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" nginx bash
+}
+
+tomysql() {
+    if [[ $# -lt 1 ]]; then
+        local version=mysql8
+    else
+        local version=$1
+    fi
+
+    docker compose -f "${DPE_COMPOSE}" exec "${version}" bash
+}
+
+alias tomysql5='tomysql mysql5'
+alias tomysql8='tomysql mysql8'
+
+php() {
+    local workdir=$(dpe_workdir)
+    local version
+    local params
+
+    if [[ -z $workdir ]]; then
+        echo "当前目录不属于 ${DPE_SOURCE}"
+        return
+    fi
+
+    if [[ $# -ge 1 && $1 =~ ^php[0-9]{2}$ ]]; then
+        version=$1
+        params=${@:2}
+    else
+        version=php81
+        params=$@
+    fi
+
+    docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" php ${params}
+}
+
+alias php81='php php81'
+alias php80='php php80'
+alias php74='php php74'
+alias php73='php php73'

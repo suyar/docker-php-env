@@ -47,6 +47,7 @@
     - [3.2 安装 PHP 扩展](#32-安装-php-扩展)
     - [3.3 在 PHP 容器中执行命令](#33-在-php-容器中执行命令)
     - [3.4 使用 composer](#34-使用-composer)
+    - [3.5 快捷操作](#35-快捷操作)
 - [4. 常见问题](#4-常见问题)
     - [4.1 如何在其他容器中请求 nginx 配置的域名](#41-如何在其他容器中请求-nginx-配置的域名)
     - [4.2 在 PHP 容器中使用 cron 定时任务](#42-在-php-容器中使用-cron-定时任务)
@@ -101,6 +102,7 @@
 │   ├── phpmyadmin              phpMyAdmin 配置目录
 │   ├── rabbitmq                Rabbitmq 配置目录
 │   └── redis                   Redis 配置目录
+├── .bash_aliases.example       .bash_aliases 示例配置
 ├── .env.example                .env 变量示例配置
 ├── docker-compose.yml.example  docker-compose 示例
 ├── dpe.sh                      初始化脚本
@@ -127,7 +129,7 @@
 
     - MacOS
 
-        - 没有苹果电脑故无法尝试，后续补充
+        - 未尝试
 
 2. `clone` 项目
 
@@ -250,7 +252,7 @@ Zend OPcache
 
 支持的扩展在这边可以在这边查看：[docker-php-extension-installer](https://github.com/mlocati/docker-php-extension-installer#supported-php-extensions)。
 
-> 这种方式安装扩展和 DNMP 的方式不同，通过这种方式安装的扩展，在容器销毁后重新创建，不会保留，需要重新安装。
+> 这种方式安装扩展和 `DNMP` 的方式不同，通过这种方式安装的扩展，在容器销毁后重新创建，不会保留，需要重新安装。
 
 ### 3.3 在 PHP 容器中执行命令
 
@@ -259,8 +261,6 @@ Zend OPcache
 root@08240e17170e:/www# php -v
 ```
 
-这里移除了 DNMP 中使用 `alias` 的方式在 Host 主机中执行 PHP 命令。
-
 ### 3.4 使用 composer
 
 ```
@@ -268,7 +268,88 @@ root@08240e17170e:/www# php -v
 root@08240e17170e:/www# composer install
 ```
 
-这里移除了 DNMP 中使用 `alias` 的方式在 Host 主机中执行 `composer` 命令。
+### 3.5 快捷操作
+
+1. 把 [.bash_aliases.example](.bash_aliases.example) 的内容拷贝到 `~/.bash_aliases` 或 `~/.bashrc`
+2. 修改 `~/.bash_aliases` 的变量 `DPE_COMPOSE` 和 `DPE_SOURCE`
+
+    ```
+    # docker-php-env docker-compose.yml 绝对路径
+    DPE_COMPOSE=/home/suyar/repo/suyar/github/docker-php-env/docker-compose.yml
+    # docker-php-env 挂载的 DIR_SOURCE 绝对路径
+    DPE_SOURCE=/home/suyar/repo
+
+    ...
+    ```
+
+3. 开始使用快捷命令
+
+    ```
+    # 进入 php81 容器，自动识别挂载目录中的相对路径
+    $ tophp
+    # 进入 php81 容器，自动识别挂载目录中的相对路径
+    $ tophp81
+    # 进入 php80 容器，自动识别挂载目录中的相对路径
+    $ tophp80
+    # 进入 php74 容器，自动识别挂载目录中的相对路径
+    $ tophp74
+    # 进入 php73 容器，自动识别挂载目录中的相对路径
+    $ tophp73
+
+    # 进入 nginx 容器，自动识别挂载目录中的相对路径
+    $ tonginx
+
+    # 进入 mysql8 容器
+    $ tomysql
+    # 进入 mysql8 容器
+    $ tomysql8
+    # 进入 mysql5 容器
+    $ tomysql5
+
+    # 在宿主机执行 php 命令，自动识别挂载目录中的相对路径
+    $ php
+    $ php81
+    $ php80
+    $ php74
+    $ php73
+    ```
+
+    > 关于 `自动识别挂载目录中的相对路径` 的效果如下：
+
+    ① 假设我的 `.env` 配置如下：
+
+    ```
+    ...
+    # 挂载到容器的目录
+    DIR_SOURCE=/home/repo
+    ...
+    ```
+
+    ② 假设我的 `~/.bash_aliases` 变量配置如下：
+
+    ```
+    # docker-php-env 挂载的 DIR_SOURCE 绝对路径
+    DPE_SOURCE=/home/repo
+    ```
+
+    ③ 假设我宿主机中，当前目录为 **`/home/repo/laravel`**
+
+    那么我在宿主机执行 `tophp` 命令后：
+
+    ```
+    $ tophp
+    root@0f70cb169d72:/www/laravel#
+    ```
+
+    可以看到，这时候默认进入到 `laravel` 目录。
+
+    如果我在宿主机执行 `php -v`：
+
+    ```
+    $ php artisan
+    ```
+
+    那么实际上，会在容器中的 `/www/laravel` 去执行 `php artisan` 命令。
 
 ## 4 常见问题
 
