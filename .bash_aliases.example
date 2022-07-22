@@ -20,6 +20,10 @@ dpe_workdir() {
     echo $workdir
 }
 
+todpe() {
+    cd $(dirname $(readlink -f "${DPE_COMPOSE}"))
+}
+
 tophp() {
     if [[ $# -lt 1 ]]; then
         local version=php81
