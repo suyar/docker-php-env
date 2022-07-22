@@ -24,6 +24,10 @@ todpe() {
     cd $(dirname $(readlink -f "${DPE_COMPOSE}"))
 }
 
+tosource() {
+    cd $DPE_SOURCE
+}
+
 tophp() {
     if [[ $# -lt 1 ]]; then
         local version=php81
