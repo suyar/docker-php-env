@@ -285,6 +285,9 @@ root@08240e17170e:/www# composer install
 3. 开始使用快捷命令
 
     ```
+    # 进入宿主机 docker-php-env 目录
+    $ todpe
+
     # 进入 php81 容器，自动识别挂载目录中的相对路径
     $ tophp
     # 进入 php81 容器，自动识别挂载目录中的相对路径
