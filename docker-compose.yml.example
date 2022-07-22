@@ -11,6 +11,7 @@ services:
       - ${DIR_DATA}/mysql8:/var/lib/mysql
       - ${DIR_SERVICES}/mysql/mysql8.cnf:/etc/mysql/conf.d/mysql.cnf
       - ${DIR_LOGS}/mysql/8:/var/log/mysql
+    hostname: mysql8
     ports:
       - "${MYSQL8_HOST_PORT}:3306"
     networks:
@@ -34,6 +35,7 @@ services:
       - ${DIR_DATA}/mysql5:/var/lib/mysql
       - ${DIR_SERVICES}/mysql/mysql5.cnf:/etc/mysql/conf.d/mysql.cnf
       - ${DIR_LOGS}/mysql/5:/var/log/mysql
+    hostname: mysql5
     ports:
       - "${MYSQL5_HOST_PORT}:3306"
     networks:
@@ -57,6 +59,7 @@ services:
       PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - ${DIR_SERVICES}/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+    hostname: phpmyadmin
     ports:
       - "${PHPMYADMIN_HOST_PORT}:80"
     networks:
@@ -75,6 +78,7 @@ services:
     volumes:
       - ${DIR_DATA}/redis:/data
       - ${DIR_SERVICES}/redis/redis.conf:/etc/redis.conf
+    hostname: redis
     ports:
       - "${REDIS_HOST_PORT}:6379"
     command: ["redis-server", "/etc/redis.conf"]
@@ -93,6 +97,7 @@ services:
       TZ: ${TZ}
       REDIS_1_HOST: redis
       REDIS_1_PORT: 6379
+    hostname: phpredisadmin
     ports:
       - "${PHPREDISADMIN_HOST_PORT}:80"
     networks:
@@ -108,6 +113,7 @@ services:
     image: memcached:${MEMCACHED_VERSION}
     environment:
       TZ: ${TZ}
+    hostname: memcached
     ports:
       - "${MEMCACHED_HOST_PORT}:11211"
     command: ["memcached", "-m", "${MEMCACHED_MEMORY}"]
@@ -136,6 +142,7 @@ services:
       - ${DIR_LOGS}/php/81/log:/var/log/php
       - ${DIR_SOURCE}:/www
     working_dir: /www
+    hostname: php81
     cap_add:
       - SYS_PTRACE
     networks:
@@ -165,6 +172,7 @@ services:
       - ${DIR_LOGS}/php/80/log:/var/log/php
       - ${DIR_SOURCE}:/www
     working_dir: /www
+    hostname: php80
     cap_add:
       - SYS_PTRACE
     networks:
@@ -192,6 +200,7 @@ services:
       - ${DIR_LOGS}/php/74/log:/var/log/php
       - ${DIR_SOURCE}:/www
     working_dir: /www
+    hostname: php74
     cap_add:
       - SYS_PTRACE
     networks:
@@ -219,6 +228,7 @@ services:
       - ${DIR_LOGS}/php/73/log:/var/log/php
       - ${DIR_SOURCE}:/www
     working_dir: /www
+    hostname: php73
     cap_add:
       - SYS_PTRACE
     networks:
@@ -241,6 +251,7 @@ services:
       - ${DIR_LOGS}/nginx:/var/log/nginx
       - ${DIR_SOURCE}:/www
     working_dir: /www
+    hostname: nginx
     ports:
       - "${NGINX_HTTP_HOST_PORT}:80"
       - "${NGINX_HTTPS_HOST_PORT}:443"
@@ -289,6 +300,7 @@ services:
       - ${DIR_DATA}/mongodb:/data/db
       - ${DIR_SERVICES}/mongodb/mongod.conf:/etc/mongo/mongod.conf
       - ${DIR_LOGS}/mongodb:/var/log/mongodb
+    hostname: mongodb
     ports:
       - "${MONGODB_HOST_PORT}:27017"
     command: ["--config", "/etc/mongo/mongod.conf"]
@@ -311,6 +323,7 @@ services:
       ME_CONFIG_MONGODB_PORT: 27017
     volumes:
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+    hostname: mongo-express
     ports:
       - "${MONGOEXPRESS_HOST_PORT}:8081"
     networks:
@@ -352,6 +365,7 @@ services:
       I18N_LOCALE: ${kIBANA_I18N_LOCALE}
     volumes:
       - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
+    hostname: kibana
     ports:
       - "${kIBANA_HOST_PORT}:5601"
     networks:
