@@ -348,13 +348,13 @@ root@08240e17170e:/www# composer install
 
     可以看到，这时候默认进入到 `laravel` 目录。
 
-    如果我在宿主机执行 `php -v`：
+    如果我在宿主机执行命令：
 
     ```
-    $ php artisan
+    $ php artisan list
     ```
 
-    那么实际上，会在容器中的 `/www/laravel` 去执行 `php artisan` 命令。
+    那么实际上，会在容器中的 `/www/laravel` 去执行 `php artisan list` 命令。
 
 ## 4 常见问题
 
