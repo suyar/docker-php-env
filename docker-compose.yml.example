@@ -140,6 +140,8 @@ services:
       - SYS_PTRACE
     networks:
       - default
+    extra_hosts:
+      - "demo.laravel.me:110.110.119.119"
     restart: unless-stopped
     logging:
       driver: "json-file"
