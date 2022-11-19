@@ -1,12 +1,11 @@
-本项目是一套用于 PHP 的 Docker 开发环境，站在巨人[**[DNMP]**](https://github.com/yeszao/dnmp)的肩膀上衍生的一个版本。
+本项目是一套用于 PHP 的 Docker 开发环境。
 
 为什么会有这个项目：
 
-1. DNMP 首次启动需要进行构建，时间较长，步骤繁琐
-2. DNMP 有一些容器抛出的错误日志，没有进行修复
-3. DNMP 部分镜像 `TZ` 环境变量不生效
-4. DNMP 产生大量 `docker logs` 占用磁盘空间，需要重建容器才能释放
-4. 其他问题...
+1. 开箱即用，首次启动不需要进行构建，启动时间短
+2. 所有镜像 `TZ` 环境变量都会生效
+3. 限制 `docker logs` 日志大小
+4. 等等...
 
 大部分场景下，我们希望开箱即用。当然，凡事都有两面性，不需要构建的代价，就是对镜像的定制化能力变低，看个人取舍。
 
@@ -14,11 +13,11 @@
 
 重要的事情说三遍：
 
-**该项目仅适用于本地开发，不能用于生产环境**
+**该项目仅适用于本地开发，不能直接用于生产环境**
 
-**该项目仅适用于本地开发，不能用于生产环境**
+**该项目仅适用于本地开发，不能直接用于生产环境**
 
-**该项目仅适用于本地开发，不能用于生产环境**
+**该项目仅适用于本地开发，不能直接用于生产环境**
 
 ---
 
@@ -164,7 +163,7 @@
 
 ### 3.1 PHP 预置扩展
 
-PHP 镜像默认安装了下列扩展，暂不支持重新安装指定版本扩展，如果确实有需要，推荐用 [**[DNMP]**](https://github.com/yeszao/dnmp)，也可以 fork 本项目后，参照 [docker-php](https://github.com/suyar/docker-php) 自己构建。
+PHP 镜像默认安装了下列扩展，暂不支持重新安装指定版本扩展，可以 fork 本项目后，参照 [docker-php](https://github.com/suyar/docker-php) 自己构建。
 
 ```
 [PHP Modules]
@@ -252,7 +251,7 @@ Zend OPcache
 
 支持的扩展在这边可以在这边查看：[docker-php-extension-installer](https://github.com/mlocati/docker-php-extension-installer#supported-php-extensions)。
 
-> 这种方式安装扩展和 `DNMP` 的方式不同，通过这种方式安装的扩展，在容器销毁后重新创建，不会保留，需要重新安装。
+> 通过这种方式安装的扩展，在容器销毁后重新创建，不会保留，需要重新安装。
 
 ### 3.3 在 PHP 容器中执行命令
 
@@ -404,8 +403,7 @@ root@08240e17170e:/www# composer install
 
 ```
 # sudo docker compose exec php81 bash
-# cd /www/laravel
-# crontab -f schedule
+# crontab /www/laravel/schedule
 ```
 
 ### 4.3 在 PHP 容器中使用 supervisor
