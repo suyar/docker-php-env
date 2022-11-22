@@ -1,5 +1,5 @@
 *
 !.gitignore
-!conf/
+!conf.d/
 !ssl/
 !nginx.conf
