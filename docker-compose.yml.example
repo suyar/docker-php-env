@@ -122,6 +122,36 @@ services:
         max-size: "10m"
         max-file: "1"
 
+  php82:
+    image: suyar/php:8.2-integration
+    environment:
+      TZ: ${TZ}
+      COMPOSER_ALLOW_SUPERUSER: 1
+      COMPOSER_MEMORY_LIMIT: -1
+      COMPOSER_HOME: /tmp/composer
+    volumes:
+      - ${DIR_SERVICES}/php/82/php.ini:/usr/local/etc/php/php.ini
+      - ${DIR_SERVICES}/php/82/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
+      - ${DIR_SERVICES}/php/82/supervisor.conf:/etc/supervisor/conf.d/service.conf
+      - ${DIR_DATA}/composer:/tmp/composer
+      - ${DIR_LOGS}/php/82/supervisor:/var/log/supervisor
+      - ${DIR_LOGS}/php/82/log:/var/log/php
+      - ${DIR_SOURCE}:/www
+    working_dir: /www
+    hostname: php82
+    cap_add:
+      - SYS_PTRACE
+    networks:
+      - default
+    extra_hosts:
+      - "demo.laravel.me:110.110.119.119"
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
   php81:
     image: suyar/php:8.1-integration
     environment:
@@ -143,8 +173,6 @@ services:
       - SYS_PTRACE
     networks:
       - default
-    extra_hosts:
-      - "demo.laravel.me:110.110.119.119"
     restart: unless-stopped
     logging:
       driver: "json-file"

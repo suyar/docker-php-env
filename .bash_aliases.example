@@ -30,7 +30,7 @@ tosource() {
 
 tophp() {
     if [[ $# -lt 1 ]]; then
-        local version=php81
+        local version=php82
     else
         local version=$1
     fi
@@ -44,6 +44,7 @@ tophp() {
     docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" bash
 }
 
+alias tophp82='tophp php82'
 alias tophp81='tophp php81'
 alias tophp80='tophp php80'
 alias tophp74='tophp php74'
@@ -86,13 +87,14 @@ php() {
         version=$1
         params=${@:2}
     else
-        version=php81
+        version=php82
         params=$@
     fi
 
     docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" php ${params}
 }
 
+alias php82='php php82'
 alias php81='php php81'
 alias php80='php php80'
 alias php74='php php74'
