@@ -1,5 +1,5 @@
 # docker-php-env docker-compose.yml 绝对路径
-DPE_COMPOSE=/home/suyar/repo/suyar/github/docker-php-env/docker-compose.yml
+DPE_COMPOSE=/home/suyar/repo/docker-php-env/docker-compose.yml
 # docker-php-env 挂载的 DIR_SOURCE 绝对路径
 DPE_SOURCE=/home/suyar/repo
 
@@ -41,7 +41,7 @@ tophp() {
         workdir=/www
     fi
 
-    docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" bash
+    sudo docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" bash
 }
 
 alias tophp82='tophp php82'
@@ -57,7 +57,7 @@ tonginx() {
         workdir=/www
     fi
 
-    docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" nginx bash
+    sudo docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" nginx bash
 }
 
 tomysql() {
@@ -67,7 +67,7 @@ tomysql() {
         local version=$1
     fi
 
-    docker compose -f "${DPE_COMPOSE}" exec "${version}" bash
+    sudo docker compose -f "${DPE_COMPOSE}" exec "${version}" bash
 }
 
 alias tomysql5='tomysql mysql5'
@@ -91,7 +91,7 @@ php() {
         params=$@
     fi
 
-    docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" php ${params}
+    sudo docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" php ${params}
 }
 
 alias php82='php php82'
