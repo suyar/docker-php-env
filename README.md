@@ -278,7 +278,7 @@ root@php82:/www# composer install
 
     ```
     # docker-php-env docker-compose.yml 绝对路径
-    DPE_COMPOSE=/home/suyar/repo/suyar/github/docker-php-env/docker-compose.yml
+    DPE_COMPOSE=/home/suyar/repo/docker-php-env/docker-compose.yml
     # docker-php-env 挂载的 DIR_SOURCE 绝对路径
     DPE_SOURCE=/home/suyar/repo
 
@@ -323,6 +323,14 @@ root@php82:/www# composer install
     $ php80
     $ php74
     $ php73
+
+    # 在宿主机执行 composer 命令，自动识别挂载目录中的相对路径
+    $ composer
+    $ composer82
+    $ composer81
+    $ composer80
+    $ composer74
+    $ composer73
     ```
 
     > 关于 `自动识别挂载目录中的相对路径` 的效果如下：

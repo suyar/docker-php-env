@@ -99,3 +99,30 @@ alias php81='php php81'
 alias php80='php php80'
 alias php74='php php74'
 alias php73='php php73'
+
+composer() {
+    local workdir=$(dpe_workdir)
+    local version
+    local params
+
+    if [[ -z $workdir ]]; then
+        echo "当前目录不属于 ${DPE_SOURCE}"
+        return
+    fi
+
+    if [[ $# -ge 1 && $1 =~ ^php[0-9]{2}$ ]]; then
+        version=$1
+        params=${@:2}
+    else
+        version=php82
+        params=$@
+    fi
+
+    sudo docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" composer ${params}
+}
+
+alias composer82='composer php82'
+alias composer81='composer php81'
+alias composer80='composer php80'
+alias composer74='composer php74'
+alias composer73='composer php73'
