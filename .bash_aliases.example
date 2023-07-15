@@ -41,7 +41,7 @@ tophp() {
         workdir=/www
     fi
 
-    sudo docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" bash
+    sudo docker compose -f "${DPE_COMPOSE}" exec -u $(id -u):$(id -g) -w "${workdir}" "${version}" bash
 }
 
 alias tophp82='tophp php82'
@@ -91,7 +91,7 @@ php() {
         params=$@
     fi
 
-    sudo docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" php ${params}
+    sudo docker compose -f "${DPE_COMPOSE}" exec -u $(id -u):$(id -g) -w "${workdir}" "${version}" php ${params}
 }
 
 alias php82='php php82'
@@ -118,7 +118,7 @@ composer() {
         params=$@
     fi
 
-    sudo docker compose -f "${DPE_COMPOSE}" exec -w "${workdir}" "${version}" composer ${params}
+    sudo docker compose -f "${DPE_COMPOSE}" exec -u $(id -u):$(id -g) -w "${workdir}" "${version}" composer ${params}
 }
 
 alias composer82='composer php82'
