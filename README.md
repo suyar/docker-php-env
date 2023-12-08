@@ -24,7 +24,7 @@
 目前支持开箱即用的服务有：
 
 1. Mysql5.7（使用官方镜像）
-2. Mysql8.0（使用官方镜像）
+2. Mysql8.2（使用官方镜像）
 3. phpMyAdmin（使用官方镜像）
 4. Redis（使用官方镜像）
 5. phpRedisAdmin（使用官方镜像）
@@ -63,14 +63,14 @@
 │   ├── elasticsearch           Elasticsearch 持久化数据
 │   ├── mongodb                 MongoDB 持久化数据
 │   ├── mysql5                  Mysql5.7 持久化数据
-│   ├── mysql8                  Mysql8.0 持久化数据
+│   ├── mysql8                  Mysql8.2 持久化数据
 │   ├── rabbitmq                Rabbitmq 持久化数据
 │   └── redis                   Redis 持久化数据
 ├── logs
 │   ├── mongodb                 MongoDB 日志
 │   ├── mysql
 │   │   ├── 5                   Mysql5.7 日志
-│   │   └── 8                   Mysql8.0 日志
+│   │   └── 8                   Mysql8.2 日志
 │   ├── nginx                   Nginx 日志
 │   ├── php
 │   │   ├── 73
@@ -95,7 +95,7 @@
 ├── services
 │   ├── elasticsearch           Elasticsearch 配置目录
 │   ├── mongodb                 MongoDB 配置目录
-│   ├── mysql                   Mysql5.7/Mysql8.0 配置目录
+│   ├── mysql                   Mysql5.7/Mysql8.2 配置目录
 │   ├── nginx                   Nginx 配置目录
 │   │   ├── conf.d              Nginx Vhost 配置目录
 │   │   └── ssl                 Nginx 证书目录
