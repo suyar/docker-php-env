@@ -29,7 +29,7 @@
 4. Redis（使用官方镜像）
 5. phpRedisAdmin（使用官方镜像）
 6. Memcached（使用官方镜像）
-7. PHP8.2/PHP8.1/PHP8.0/PHP7.4/PHP7.3（使用基于官方的集成镜像 [suyar/php:x.x-integration](https://github.com/suyar/docker-php#%E9%9B%86%E6%88%90%E9%95%9C%E5%83%8F)）
+7. PHP8.3/PHP8.2/PHP8.1/PHP8.0/PHP7.4/PHP7.3（使用基于官方的集成镜像 [suyar/php:x.x-integration](https://github.com/suyar/docker-php#%E9%9B%86%E6%88%90%E9%95%9C%E5%83%8F)）
 8. Nginx（使用官方镜像）
 9. RabbitMQ（使用官方镜像）
 10. MongoDB（使用官方镜像）
@@ -85,9 +85,12 @@
 │   │   ├── 81
 │   │   │   ├── log             PHP8.1 错误日志与慢日志
 │   │   │   └── supervisor      PHP8.1 里 supervisor 日志
-│   │   └── 82
-│   │       ├── log             PHP8.2 错误日志与慢日志
-│   │       └── supervisor      PHP8.2 里 supervisor 日志
+│   │   ├── 82
+│   │   │   ├── log             PHP8.2 错误日志与慢日志
+│   │   │   └── supervisor      PHP8.2 里 supervisor 日志
+│   │   └── 83
+│   │       ├── log             PHP8.3 错误日志与慢日志
+│   │       └── supervisor      PHP8.3 里 supervisor 日志
 │   └── rabbitmq                Rabbitmq 日志
 ├── services
 │   ├── elasticsearch           Elasticsearch 配置目录
@@ -101,7 +104,8 @@
 │   │   ├── 74                  PHP7.4 配置目录
 │   │   ├── 80                  PHP8.0 配置目录
 │   │   ├── 81                  PHP8.1 配置目录
-│   │   └── 82                  PHP8.2 配置目录
+│   │   ├── 82                  PHP8.2 配置目录
+│   │   └── 83                  PHP8.3 配置目录
 │   ├── phpmyadmin              phpMyAdmin 配置目录
 │   ├── rabbitmq                Rabbitmq 配置目录
 │   └── redis                   Redis 配置目录
@@ -250,7 +254,7 @@ Zend OPcache
 除了预置的扩展，如果你还想安装其他扩展，可以直接执行：
 
 ```
-# sudo docker-compose exec php82 install-php-extensions xxx
+# sudo docker-compose exec php83 install-php-extensions xxx
 ```
 
 支持的扩展在这边可以在这边查看：[docker-php-extension-installer](https://github.com/mlocati/docker-php-extension-installer#supported-php-extensions)。
@@ -260,15 +264,15 @@ Zend OPcache
 ### 3.3 在 PHP 容器中执行命令
 
 ```
-# sudo docker-compose exec php82 bash
-root@php82:/www# php -v
+# sudo docker-compose exec php83 bash
+root@php83:/www# php -v
 ```
 
 ### 3.4 使用 composer
 
 ```
-# sudo docker-compose exec php82 bash
-root@php82:/www# composer install
+# sudo docker-compose exec php83 bash
+root@php83:/www# composer install
 ```
 
 ### 3.5 快捷操作
@@ -293,8 +297,10 @@ root@php82:/www# composer install
     # 进入宿主机 DIR_SOURCE 目录
     $ tosource
 
-    # 进入 php82 容器，自动识别挂载目录中的相对路径
+    # 进入 php83 容器，自动识别挂载目录中的相对路径
     $ tophp
+    # 进入 php83 容器，自动识别挂载目录中的相对路径
+    $ tophp83
     # 进入 php82 容器，自动识别挂载目录中的相对路径
     $ tophp82
     # 进入 php81 容器，自动识别挂载目录中的相对路径
@@ -318,6 +324,7 @@ root@php82:/www# composer install
 
     # 在宿主机执行 php 命令，自动识别挂载目录中的相对路径
     $ php
+    $ php83
     $ php82
     $ php81
     $ php80
@@ -326,6 +333,7 @@ root@php82:/www# composer install
 
     # 在宿主机执行 composer 命令，自动识别挂载目录中的相对路径
     $ composer
+    $ composer83
     $ composer82
     $ composer81
     $ composer80
@@ -357,7 +365,7 @@ root@php82:/www# composer install
 
     ```
     $ tophp
-    root@php82:/www/laravel#
+    root@php83:/www/laravel#
     ```
 
     可以看到，这时候默认进入到 `laravel` 目录。
@@ -406,7 +414,7 @@ root@php82:/www# composer install
 
 ### 4.2 在 PHP 容器中使用 cron 定时任务
 
-这里以 `php82` 容器举例：
+这里以 `php83` 容器举例：
 
 1. 在 `DIR_SOURCE` 所在的目录或项目中，增加一个文件，例如创建 `www/laravel/schedule` 文件，并把定时任务写在里面：
 
@@ -417,16 +425,16 @@ root@php82:/www# composer install
 2. 进入 PHP 容器，添加定时任务：
 
 ```
-# sudo docker compose exec php82 bash
+# sudo docker compose exec php83 bash
 # crontab /www/laravel/schedule
 ```
 
 ### 4.3 在 PHP 容器中使用 supervisor
 
-这里以 `php82` 容器举例：
+这里以 `php83` 容器举例：
 
-1. 修改 `services/php/81/supervisor.conf` 的内容
-2. 重启 `php82` 容器
+1. 修改 `services/php/83/supervisor.conf` 的内容
+2. 重启 `php83` 容器
 
 ### 4.4 清空服务数据
 
