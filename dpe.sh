@@ -34,6 +34,8 @@ LOGS_DIRS=(
     php/81/supervisor
     php/82/log
     php/82/supervisor
+    php/83/log
+    php/83/supervisor
     rabbitmq
 )
 

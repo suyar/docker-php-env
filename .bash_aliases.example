@@ -30,7 +30,7 @@ tosource() {
 
 tophp() {
     if [[ $# -lt 1 ]]; then
-        local version=php82
+        local version=php83
     else
         local version=$1
     fi
@@ -44,6 +44,7 @@ tophp() {
     sudo docker compose -f "${DPE_COMPOSE}" exec -u $(id -u):$(id -g) -w "${workdir}" "${version}" bash
 }
 
+alias tophp83='tophp php83'
 alias tophp82='tophp php82'
 alias tophp81='tophp php81'
 alias tophp80='tophp php80'
@@ -87,13 +88,14 @@ php() {
         version=$1
         params=${@:2}
     else
-        version=php82
+        version=php83
         params=$@
     fi
 
     sudo docker compose -f "${DPE_COMPOSE}" exec -u $(id -u):$(id -g) -w "${workdir}" "${version}" php ${params}
 }
 
+alias php83='php php83'
 alias php82='php php82'
 alias php81='php php81'
 alias php80='php php80'
@@ -114,13 +116,14 @@ composer() {
         version=$1
         params=${@:2}
     else
-        version=php82
+        version=php83
         params=$@
     fi
 
     sudo docker compose -f "${DPE_COMPOSE}" exec -u $(id -u):$(id -g) -w "${workdir}" "${version}" composer ${params}
 }
 
+alias composer83='composer php83'
 alias composer82='composer php82'
 alias composer81='composer php81'
 alias composer80='composer php80'
