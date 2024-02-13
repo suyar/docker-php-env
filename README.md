@@ -24,9 +24,9 @@
 目前支持开箱即用的服务有：
 
 1. Mysql5.7（使用官方镜像）
-2. Mysql8.2（使用官方镜像）
+2. Mysql8.3（使用官方镜像）
 3. phpMyAdmin（使用官方镜像）
-4. Redis（使用官方镜像）
+4. Redis7.2（使用官方镜像）
 5. phpRedisAdmin（使用官方镜像）
 6. Memcached（使用官方镜像）
 7. PHP8.3/PHP8.2/PHP8.1/PHP8.0/PHP7.4/PHP7.3（使用基于官方的集成镜像 [suyar/php:x.x-integration](https://github.com/suyar/docker-php#%E9%9B%86%E6%88%90%E9%95%9C%E5%83%8F)）
