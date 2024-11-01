@@ -1,63 +1,20 @@
-version: "3"
+name: dpe
 
 services:
-  mysql8:
-    image: mysql:${MYSQL8_VERSION}
+  mysql:
+    image: mysql:${MYSQL_VERSION}
     environment:
       TZ: ${TZ}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
+      MYSQL_ROOT_HOST: "%"
     volumes:
-      - ${DIR_DATA}/mysql8:/var/lib/mysql
-      - ${DIR_SERVICES}/mysql/mysql8.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ${DIR_LOGS}/mysql/8:/var/log/mysql
-    hostname: mysql8
+      - mysql-data:/var/lib/mysql
+      - ${DIR_SERVICES}/mysql/my.cnf:/etc/mysql/my.cnf:ro
+      - ${DIR_SERVICES}/mysql/docker.cnf:/etc/mysql/conf.d/docker.cnf:ro
+      - ${DIR_SERVICES}/mysql/zz-custom.cnf:/etc/mysql/conf.d/zz-custom.cnf:ro
+    hostname: mysql
     ports:
-      - "${MYSQL8_HOST_PORT}:3306"
-    networks:
-      - default
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "1"
-
-  mysql5:
-    image: mysql:${MYSQL5_VERSION}
-    environment:
-      TZ: ${TZ}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_ROOT_HOST: ${MYSQL_ROOT_HOST}
-    volumes:
-      - ${DIR_DATA}/mysql5:/var/lib/mysql
-      - ${DIR_SERVICES}/mysql/mysql5.cnf:/etc/mysql/conf.d/mysql.cnf
-      - ${DIR_LOGS}/mysql/5:/var/log/mysql
-    hostname: mysql5
-    ports:
-      - "${MYSQL5_HOST_PORT}:3306"
-    networks:
-      - default
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "1"
-
-  phpmyadmin:
-    image: phpmyadmin:${PHPMYADMIN_VERSION}
-    environment:
-      TZ: ${TZ}
-      PMA_HOSTS: ${PHPMYADMIN_PMA_HOSTS}
-      PMA_PORT: 3306
-      PMA_USER: root
-      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    volumes:
-      - ${DIR_SERVICES}/phpmyadmin/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
-    hostname: phpmyadmin
-    ports:
-      - "${PHPMYADMIN_HOST_PORT}:80"
+      - "${MYSQL_HOST_PORT}:3306"
     networks:
       - default
     restart: unless-stopped
@@ -72,30 +29,12 @@ services:
     environment:
       TZ: ${TZ}
     volumes:
-      - ${DIR_DATA}/redis:/data
-      - ${DIR_SERVICES}/redis/redis.conf:/etc/redis.conf
+      - redis-data:/data
+      - ${DIR_SERVICES}/redis/redis.conf:/etc/redis.conf:ro
     hostname: redis
     ports:
       - "${REDIS_HOST_PORT}:6379"
     command: [ "redis-server", "/etc/redis.conf" ]
-    networks:
-      - default
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "1"
-
-  phpredisadmin:
-    image: erikdubbelboer/phpredisadmin
-    environment:
-      TZ: ${TZ}
-      REDIS_1_HOST: redis
-      REDIS_1_PORT: 6379
-    hostname: phpredisadmin
-    ports:
-      - "${PHPREDISADMIN_HOST_PORT}:80"
     networks:
       - default
     restart: unless-stopped
@@ -127,160 +66,16 @@ services:
     environment:
       TZ: ${TZ}
       COMPOSER_ALLOW_SUPERUSER: 1
-      COMPOSER_MEMORY_LIMIT: -1
       COMPOSER_HOME: /tmp/composer
     volumes:
-      - ${DIR_SERVICES}/php/83/php.ini:/usr/local/etc/php/php.ini
-      - ${DIR_SERVICES}/php/83/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
-      - ${DIR_SERVICES}/php/83/supervisor.conf:/etc/supervisor/conf.d/service.conf
-      - ${DIR_DATA}/composer:/tmp/composer
-      - ${DIR_LOGS}/php/83/supervisor:/var/log/supervisor
-      - ${DIR_LOGS}/php/83/log:/var/log/php
+      - ${DIR_SERVICES}/php83/php.ini:/usr/local/etc/php/php.ini:ro
+      - ${DIR_SERVICES}/php83/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf:ro
+      - ${DIR_SERVICES}/php83/supervisor.conf:/etc/supervisor/conf.d/service.conf:ro
+      - ${DIR_LOGS}/php83/supervisor:/var/log/supervisor
+      - ${DIR_LOGS}/php83/log:/var/log/php
       - ${DIR_SOURCE}:/www
     working_dir: /www
     hostname: php83
-    cap_add:
-      - SYS_PTRACE
-    networks:
-      - default
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "1"
-
-  php82:
-    image: suyar/php:8.2-integration
-    environment:
-      TZ: ${TZ}
-      COMPOSER_ALLOW_SUPERUSER: 1
-      COMPOSER_MEMORY_LIMIT: -1
-      COMPOSER_HOME: /tmp/composer
-    volumes:
-      - ${DIR_SERVICES}/php/82/php.ini:/usr/local/etc/php/php.ini
-      - ${DIR_SERVICES}/php/82/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
-      - ${DIR_SERVICES}/php/82/supervisor.conf:/etc/supervisor/conf.d/service.conf
-      - ${DIR_DATA}/composer:/tmp/composer
-      - ${DIR_LOGS}/php/82/supervisor:/var/log/supervisor
-      - ${DIR_LOGS}/php/82/log:/var/log/php
-      - ${DIR_SOURCE}:/www
-    working_dir: /www
-    hostname: php82
-    cap_add:
-      - SYS_PTRACE
-    networks:
-      - default
-    extra_hosts:
-      - "demo.laravel.me:110.110.119.119"
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "1"
-
-  php81:
-    image: suyar/php:8.1-integration
-    environment:
-      TZ: ${TZ}
-      COMPOSER_ALLOW_SUPERUSER: 1
-      COMPOSER_MEMORY_LIMIT: -1
-      COMPOSER_HOME: /tmp/composer
-    volumes:
-      - ${DIR_SERVICES}/php/81/php.ini:/usr/local/etc/php/php.ini
-      - ${DIR_SERVICES}/php/81/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
-      - ${DIR_SERVICES}/php/81/supervisor.conf:/etc/supervisor/conf.d/service.conf
-      - ${DIR_DATA}/composer:/tmp/composer
-      - ${DIR_LOGS}/php/81/supervisor:/var/log/supervisor
-      - ${DIR_LOGS}/php/81/log:/var/log/php
-      - ${DIR_SOURCE}:/www
-    working_dir: /www
-    hostname: php81
-    cap_add:
-      - SYS_PTRACE
-    networks:
-      - default
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "1"
-
-  php80:
-    image: suyar/php:8.0-integration
-    environment:
-      TZ: ${TZ}
-      COMPOSER_ALLOW_SUPERUSER: 1
-      COMPOSER_MEMORY_LIMIT: -1
-      COMPOSER_HOME: /tmp/composer
-    volumes:
-      - ${DIR_SERVICES}/php/80/php.ini:/usr/local/etc/php/php.ini
-      - ${DIR_SERVICES}/php/80/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
-      - ${DIR_SERVICES}/php/80/supervisor.conf:/etc/supervisor/conf.d/service.conf
-      - ${DIR_DATA}/composer:/tmp/composer
-      - ${DIR_LOGS}/php/80/supervisor:/var/log/supervisor
-      - ${DIR_LOGS}/php/80/log:/var/log/php
-      - ${DIR_SOURCE}:/www
-    working_dir: /www
-    hostname: php80
-    cap_add:
-      - SYS_PTRACE
-    networks:
-      - default
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "1"
-
-  php74:
-    image: suyar/php:7.4-integration
-    environment:
-      TZ: ${TZ}
-      COMPOSER_ALLOW_SUPERUSER: 1
-      COMPOSER_MEMORY_LIMIT: -1
-      COMPOSER_HOME: /tmp/composer
-    volumes:
-      - ${DIR_SERVICES}/php/74/php.ini:/usr/local/etc/php/php.ini
-      - ${DIR_SERVICES}/php/74/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
-      - ${DIR_SERVICES}/php/74/supervisor.conf:/etc/supervisor/conf.d/service.conf
-      - ${DIR_DATA}/composer:/tmp/composer
-      - ${DIR_LOGS}/php/74/supervisor:/var/log/supervisor
-      - ${DIR_LOGS}/php/74/log:/var/log/php
-      - ${DIR_SOURCE}:/www
-    working_dir: /www
-    hostname: php74
-    cap_add:
-      - SYS_PTRACE
-    networks:
-      - default
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "1"
-
-  php73:
-    image: suyar/php:7.3-integration
-    environment:
-      TZ: ${TZ}
-      COMPOSER_ALLOW_SUPERUSER: 1
-      COMPOSER_MEMORY_LIMIT: -1
-      COMPOSER_HOME: /tmp/composer
-    volumes:
-      - ${DIR_SERVICES}/php/73/php.ini:/usr/local/etc/php/php.ini
-      - ${DIR_SERVICES}/php/73/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf
-      - ${DIR_SERVICES}/php/73/supervisor.conf:/etc/supervisor/conf.d/service.conf
-      - ${DIR_DATA}/composer:/tmp/composer
-      - ${DIR_LOGS}/php/73/supervisor:/var/log/supervisor
-      - ${DIR_LOGS}/php/73/log:/var/log/php
-      - ${DIR_SOURCE}:/www
-    working_dir: /www
-    hostname: php73
     cap_add:
       - SYS_PTRACE
     networks:
@@ -297,9 +92,9 @@ services:
     environment:
       TZ: ${TZ}
     volumes:
-      - ${DIR_SERVICES}/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ${DIR_SERVICES}/nginx/conf.d:/etc/nginx/conf.d
-      - ${DIR_SERVICES}/nginx/ssl:/etc/nginx/ssl
+      - ${DIR_SERVICES}/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${DIR_SERVICES}/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ${DIR_SERVICES}/nginx/ssl:/etc/nginx/ssl:ro
       - ${DIR_LOGS}/nginx:/var/log/nginx
       - ${DIR_SOURCE}:/www
     working_dir: /www
@@ -310,7 +105,7 @@ services:
     networks:
       default:
         aliases:
-          - example.laravel.me
+          - example.laravel.local
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -325,10 +120,9 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     volumes:
-      - ${DIR_DATA}/rabbitmq:/var/lib/rabbitmq
-      - ${DIR_SERVICES}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf
-      - ${DIR_SERVICES}/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins
-      - ${DIR_LOGS}/rabbitmq:/var/log/rabbitmq
+      - rabbitmq-data:/var/lib/rabbitmq
+      - ${DIR_SERVICES}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ${DIR_SERVICES}/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
     hostname: rabbitmq
     ports:
       - "${RABBITMQ_HOST_PORT}:5672"
@@ -342,42 +136,19 @@ services:
         max-size: "10m"
         max-file: "1"
 
-  mongodb:
+  mongo:
     image: mongo:${MONGODB_VERSION}
     environment:
       TZ: ${TZ}
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_INITDB_ROOT_PASSWORD}
     volumes:
-      - ${DIR_DATA}/mongodb:/data/db
-      - ${DIR_SERVICES}/mongodb/mongod.conf:/etc/mongo/mongod.conf
-      - ${DIR_LOGS}/mongodb:/var/log/mongodb
+      - mongo-data:/data/db
+      - ${DIR_SERVICES}/mongodb/mongod.conf:/etc/mongo/mongod.conf:ro
     hostname: mongodb
     ports:
       - "${MONGODB_HOST_PORT}:27017"
     command: [ "--config", "/etc/mongo/mongod.conf" ]
-    networks:
-      - default
-    restart: unless-stopped
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "1"
-
-  mongo-express:
-    image: mongo-express
-    environment:
-      TZ: ${TZ}
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_INITDB_ROOT_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_INITDB_ROOT_PASSWORD}
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_MONGODB_PORT: 27017
-    volumes:
-      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
-    hostname: mongo-express
-    ports:
-      - "${MONGOEXPRESS_HOST_PORT}:8081"
     networks:
       - default
     restart: unless-stopped
@@ -394,10 +165,10 @@ services:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
-      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
-      - ${DIR_DATA}/elasticsearch:/usr/share/elasticsearch/data
-      - ${DIR_SERVICES}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+      - es-data:/usr/share/elasticsearch/data
+      - ${DIR_SERVICES}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
     hostname: elasticsearch
+    user: 1000:1000
     ports:
       - "${ELASTICSEARCH_HOST_PORT}:9200"
     networks:
@@ -415,8 +186,6 @@ services:
       TZ: ${TZ}
       ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
       I18N_LOCALE: ${kIBANA_I18N_LOCALE}
-    volumes:
-      - /usr/share/zoneinfo:/usr/share/zoneinfo:ro
     hostname: kibana
     ports:
       - "${kIBANA_HOST_PORT}:5601"
@@ -428,6 +197,13 @@ services:
       options:
         max-size: "10m"
         max-file: "1"
+
+volumes:
+  mysql-data:
+  redis-data:
+  rabbitmq-data:
+  mongo-data:
+  es-data:
 
 networks:
   default:

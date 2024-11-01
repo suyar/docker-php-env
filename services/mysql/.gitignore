@@ -1,0 +1,5 @@
+*
+!.gitignore
+!docker.cnf
+!my.cnf
+!zz-custom.cnf

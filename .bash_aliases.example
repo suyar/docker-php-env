@@ -1,6 +1,6 @@
-# docker-php-env docker-compose.yml 绝对路径
+# docker-compose.yml 绝对路径
 DPE_COMPOSE=/home/suyar/repo/docker-php-env/docker-compose.yml
-# docker-php-env 挂载的 DIR_SOURCE 绝对路径
+# 挂载的 DIR_SOURCE 绝对路径
 DPE_SOURCE=/home/suyar/repo
 
 dpe_workdir() {
@@ -20,14 +20,6 @@ dpe_workdir() {
     echo $workdir
 }
 
-todpe() {
-    cd $(dirname $(readlink -f "${DPE_COMPOSE}"))
-}
-
-tosource() {
-    cd $DPE_SOURCE
-}
-
 tophp() {
     if [[ $# -lt 1 ]]; then
         local version=php83
@@ -45,11 +37,6 @@ tophp() {
 }
 
 alias tophp83='tophp php83'
-alias tophp82='tophp php82'
-alias tophp81='tophp php81'
-alias tophp80='tophp php80'
-alias tophp74='tophp php74'
-alias tophp73='tophp php73'
 
 tonginx() {
     local workdir=$(dpe_workdir)
@@ -62,17 +49,8 @@ tonginx() {
 }
 
 tomysql() {
-    if [[ $# -lt 1 ]]; then
-        local version=mysql8
-    else
-        local version=$1
-    fi
-
-    sudo docker compose -f "${DPE_COMPOSE}" exec "${version}" bash
+    sudo docker compose -f "${DPE_COMPOSE}" exec mysql bash
 }
-
-alias tomysql5='tomysql mysql5'
-alias tomysql8='tomysql mysql8'
 
 php() {
     local workdir=$(dpe_workdir)
@@ -96,11 +74,6 @@ php() {
 }
 
 alias php83='php php83'
-alias php82='php php82'
-alias php81='php php81'
-alias php80='php php80'
-alias php74='php php74'
-alias php73='php php73'
 
 composer() {
     local workdir=$(dpe_workdir)
@@ -124,8 +97,3 @@ composer() {
 }
 
 alias composer83='composer php83'
-alias composer82='composer php82'
-alias composer81='composer php81'
-alias composer80='composer php80'
-alias composer74='composer php74'
-alias composer73='composer php73'

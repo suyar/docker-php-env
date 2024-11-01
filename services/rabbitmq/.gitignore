@@ -1,0 +1,4 @@
+*
+!.gitignore
+!enabled_plugins
+!rabbitmq.conf

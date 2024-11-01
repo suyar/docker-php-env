@@ -23,19 +23,15 @@
 
 目前支持开箱即用的服务有：
 
-1. Mysql5.7（使用官方镜像）
-2. Mysql8.3（使用官方镜像）
-3. phpMyAdmin（使用官方镜像）
-4. Redis7.2（使用官方镜像）
-5. phpRedisAdmin（使用官方镜像）
-6. Memcached（使用官方镜像）
-7. PHP8.3/PHP8.2/PHP8.1/PHP8.0/PHP7.4/PHP7.3（使用基于官方的集成镜像 [suyar/php:x.x-integration](https://github.com/suyar/docker-php#%E9%9B%86%E6%88%90%E9%95%9C%E5%83%8F)）
-8. Nginx（使用官方镜像）
-9. RabbitMQ（使用官方镜像）
-10. MongoDB（使用官方镜像）
-11. Mongo-Express（使用官方镜像）
-12. Elasticsearch（使用官方镜像）
-13. Kibana（使用官方镜像）
+1. mysql:8.0.37-debian（官方镜像）
+2. redis:7.0.15（官方镜像）
+3. memcached:1（官方镜像）
+4. PHP8.3/PHP8.2/PHP8.1/PHP8.0/PHP7.4/PHP7.3（基于官方的集成镜像 [suyar/php:x.x-integration](https://github.com/suyar/docker-php#%E9%9B%86%E6%88%90%E9%95%9C%E5%83%8F)）
+5. nginx:1.26（官方镜像）
+6. rabbitmq:3-management（官方镜像）
+7. mongo:7.0（官方镜像）
+8. elasticsearch:7.17.25（官方镜像）
+9. kibana:7.17.25（官方镜像）
 
 # 目录
 
@@ -58,62 +54,27 @@
 
 ```
 /
-├── data
-│   ├── composer                Composer 缓存
-│   ├── elasticsearch           Elasticsearch 持久化数据
-│   ├── mongodb                 MongoDB 持久化数据
-│   ├── mysql5                  Mysql5.7 持久化数据
-│   ├── mysql8                  Mysql8.2 持久化数据
-│   ├── rabbitmq                Rabbitmq 持久化数据
-│   └── redis                   Redis 持久化数据
-├── logs
-│   ├── mongodb                 MongoDB 日志
-│   ├── mysql
-│   │   ├── 5                   Mysql5.7 日志
-│   │   └── 8                   Mysql8.2 日志
-│   ├── nginx                   Nginx 日志
-│   ├── php
-│   │   ├── 73
-│   │   │   ├── log             PHP7.3 错误日志与慢日志
-│   │   │   └── supervisor      PHP7.3 里 supervisor 日志
-│   │   ├── 74
-│   │   │   ├── log             PHP7.4 错误日志与慢日志
-│   │   │   └── supervisor      PHP7.4 里 supervisor 日志
-│   │   ├── 80
-│   │   │   ├── log             PHP8.0 错误日志与慢日志
-│   │   │   └── supervisor      PHP8.0 里 supervisor 日志
-│   │   ├── 81
-│   │   │   ├── log             PHP8.1 错误日志与慢日志
-│   │   │   └── supervisor      PHP8.1 里 supervisor 日志
-│   │   ├── 82
-│   │   │   ├── log             PHP8.2 错误日志与慢日志
-│   │   │   └── supervisor      PHP8.2 里 supervisor 日志
-│   │   └── 83
-│   │       ├── log             PHP8.3 错误日志与慢日志
-│   │       └── supervisor      PHP8.3 里 supervisor 日志
-│   └── rabbitmq                Rabbitmq 日志
+├── logs                        日志存放目录
 ├── services
 │   ├── elasticsearch           Elasticsearch 配置目录
 │   ├── mongodb                 MongoDB 配置目录
-│   ├── mysql                   Mysql5.7/Mysql8.2 配置目录
+│   ├── mysql                   Mysql 配置目录
 │   ├── nginx                   Nginx 配置目录
 │   │   ├── conf.d              Nginx Vhost 配置目录
 │   │   └── ssl                 Nginx 证书目录
-│   ├── php
-│   │   ├── 73                  PHP7.3 配置目录
-│   │   ├── 74                  PHP7.4 配置目录
-│   │   ├── 80                  PHP8.0 配置目录
-│   │   ├── 81                  PHP8.1 配置目录
-│   │   ├── 82                  PHP8.2 配置目录
-│   │   └── 83                  PHP8.3 配置目录
-│   ├── phpmyadmin              phpMyAdmin 配置目录
+│   ├── php73                   PHP7.3 配置目录
+│   ├── php74                   PHP7.4 配置目录
+│   ├── php80                   PHP8.0 配置目录
+│   ├── php81                   PHP8.1 配置目录
+│   ├── php82                   PHP8.2 配置目录
+│   ├── php83                   PHP8.3 配置目录
 │   ├── rabbitmq                Rabbitmq 配置目录
 │   └── redis                   Redis 配置目录
 ├── .bash_aliases.example       .bash_aliases 示例配置
 ├── .env.example                .env 变量示例配置
 ├── docker-compose.yml.example  docker-compose 示例
 ├── dpe.sh                      初始化脚本
-└── www                         默认项目代码存放目录
+└── www                         默认项目代码挂载目录
 ```
 
 ## 2. 快速使用
@@ -165,7 +126,7 @@
     # sudo docker-compose up -d
     ```
 
-5. 在浏览器中访问：`http://localhost` 或 `http://127.0.0.1`，初始页面会显示 `404`。
+5. 在浏览器中访问：`http://localhost` 或 `http://127.0.0.1`，初始页面显示 `404`。
 
 ## 3. PHP 扩展
 
@@ -281,10 +242,12 @@ root@php83:/www# composer install
 2. 修改 `~/.bash_aliases` 的变量 `DPE_COMPOSE` 和 `DPE_SOURCE`
 
     ```
-    # docker-php-env docker-compose.yml 绝对路径
+    # docker-compose.yml 绝对路径
     DPE_COMPOSE=/home/suyar/repo/docker-php-env/docker-compose.yml
-    # docker-php-env 挂载的 DIR_SOURCE 绝对路径
+    # 挂载的 DIR_SOURCE 绝对路径
     DPE_SOURCE=/home/suyar/repo
+
+    # 依葫芦画瓢配置其他版本PHP的快捷命令
 
     ...
     ```
@@ -292,58 +255,29 @@ root@php83:/www# composer install
 3. 开始使用快捷命令
 
     ```
-    # 进入宿主机 docker-php-env 目录
-    $ todpe
-    # 进入宿主机 DIR_SOURCE 目录
-    $ tosource
-
     # 进入 php83 容器，自动识别挂载目录中的相对路径
     $ tophp
     # 进入 php83 容器，自动识别挂载目录中的相对路径
     $ tophp83
-    # 进入 php82 容器，自动识别挂载目录中的相对路径
-    $ tophp82
-    # 进入 php81 容器，自动识别挂载目录中的相对路径
-    $ tophp81
-    # 进入 php80 容器，自动识别挂载目录中的相对路径
-    $ tophp80
-    # 进入 php74 容器，自动识别挂载目录中的相对路径
-    $ tophp74
-    # 进入 php73 容器，自动识别挂载目录中的相对路径
-    $ tophp73
 
     # 进入 nginx 容器，自动识别挂载目录中的相对路径
     $ tonginx
 
-    # 进入 mysql8 容器
+    # 进入 mysql 容器
     $ tomysql
-    # 进入 mysql8 容器
-    $ tomysql8
-    # 进入 mysql5 容器
-    $ tomysql5
 
-    # 在宿主机执行 php 命令，自动识别挂载目录中的相对路径
+    # 在宿主机执行 php 命令，自动识别挂载目录中的相对路径；如果宿主机有安装php，请在`~/.bash_aliases`中修改`php()`别名
     $ php
     $ php83
-    $ php82
-    $ php81
-    $ php80
-    $ php74
-    $ php73
 
-    # 在宿主机执行 composer 命令，自动识别挂载目录中的相对路径
+    # 在宿主机执行 composer 命令，自动识别挂载目录中的相对路径；如果宿主机有安装composer，请在`~/.bash_aliases`中修改`composer()`别名
     $ composer
     $ composer83
-    $ composer82
-    $ composer81
-    $ composer80
-    $ composer74
-    $ composer73
     ```
 
     > 关于 `自动识别挂载目录中的相对路径` 的效果如下：
 
-    ① 假设我的 `.env` 配置如下：
+    ① 假设 `.env` 配置如下：
 
     ```
     ...
@@ -352,14 +286,14 @@ root@php83:/www# composer install
     ...
     ```
 
-    ② 假设我的 `~/.bash_aliases` 变量配置如下：
+    ② 假设 `~/.bash_aliases` 变量配置如下：
 
     ```
     # docker-php-env 挂载的 DIR_SOURCE 绝对路径
     DPE_SOURCE=/home/repo
     ```
 
-    ③ 假设我宿主机中，当前目录为 **`/home/repo/laravel`**
+    ③ 假设宿主机中，当前目录为 **`/home/repo/laravel`**
 
     那么我在宿主机执行 `tophp` 命令后：
 
@@ -390,9 +324,9 @@ root@php83:/www# composer install
     environment:
       TZ: ${TZ}
     volumes:
-      - ${DIR_SERVICES}/nginx/nginx.conf:/etc/nginx/nginx.conf
-      - ${DIR_SERVICES}/nginx/conf.d:/etc/nginx/conf.d
-      - ${DIR_SERVICES}/nginx/ssl:/etc/nginx/ssl
+      - ${DIR_SERVICES}/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${DIR_SERVICES}/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ${DIR_SERVICES}/nginx/ssl:/etc/nginx/ssl:ro
       - ${DIR_LOGS}/nginx:/var/log/nginx
       - ${DIR_SOURCE}:/www
     working_dir: /www
@@ -402,7 +336,7 @@ root@php83:/www# composer install
     networks:
       default:
         aliases:
-          - example.laravel.me
+          - example.laravel.local
           - test.biz.me
     restart: unless-stopped
     logging:
@@ -433,19 +367,18 @@ root@php83:/www# composer install
 
 这里以 `php83` 容器举例：
 
-1. 修改 `services/php/83/supervisor.conf` 的内容
+1. 修改 `services/php83/supervisor.conf` 的内容
 2. 重启 `php83` 容器
 
 ### 4.4 清空服务数据
 
 在某些情况下，你可能需要清空各种生成的数据，重新初始化开发环境，
 
-> 该操作是风险操作，会清空所有持久化数据！！！
+> 该操作是风险操作，会清空所有容器和持久化数据卷！！！
 
 ```
 # sudo docker-compose down
 # sudo ./dpe.sh clean
-# sudo ./dpe.sh init
 ```
 
 ## License

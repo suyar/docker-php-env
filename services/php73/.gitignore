@@ -1,0 +1,5 @@
+*
+!.gitignore
+!php-fpm.conf
+!php.ini
+!supervisor.conf
