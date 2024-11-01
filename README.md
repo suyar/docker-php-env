@@ -32,6 +32,7 @@
 7. mongo:7.0（官方镜像）
 8. elasticsearch:7.17.25（官方镜像）
 9. kibana:7.17.25（官方镜像）
+10. clickhouse-server:24.8（官方镜像）
 
 # 目录
 
@@ -56,6 +57,7 @@
 /
 ├── logs                        日志存放目录
 ├── services
+│   ├── clickhouse              ClickHouse 配置目录
 │   ├── elasticsearch           Elasticsearch 配置目录
 │   ├── mongodb                 MongoDB 配置目录
 │   ├── mysql                   Mysql 配置目录

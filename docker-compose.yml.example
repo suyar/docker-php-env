@@ -165,7 +165,7 @@ services:
       - discovery.type=single-node
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
-      - es-data:/usr/share/elasticsearch/data
+      - elasticsearch-data:/usr/share/elasticsearch/data
       - ${DIR_SERVICES}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
     hostname: elasticsearch
     user: 1000:1000
@@ -198,12 +198,42 @@ services:
         max-size: "10m"
         max-file: "1"
 
+  clickhouse:
+    image: clickhouse/clickhouse-server:24.8
+    ulimits:
+      nofile:
+        soft: 262144
+        hard: 262144
+    cap_add:
+      - SYS_NICE
+      - NET_ADMIN
+      - IPC_LOCK
+    environment:
+      TZ: ${TZ}
+    volumes:
+      - clickhouse-data:/var/lib/clickhouse
+      - ${DIR_LOGS}/clickhouse:/var/log/clickhouse-server
+      - ${DIR_SERVICES}/clickhouse/config.d:/etc/clickhouse-server/config.d:ro
+      - ${DIR_SERVICES}/clickhouse/users.d:/etc/clickhouse-server/users.d:ro
+    hostname: clickhouse
+    ports:
+      - "${CLICKHOUSE_PORT}:8123"
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
 volumes:
   mysql-data:
   redis-data:
   rabbitmq-data:
   mongo-data:
-  es-data:
+  elasticsearch-data:
+  clickhouse-data:
 
 networks:
   default:
