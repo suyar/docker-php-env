@@ -199,7 +199,7 @@ services:
         max-file: "1"
 
   clickhouse:
-    image: clickhouse/clickhouse-server:24.8
+    image: clickhouse/clickhouse-server:${CLICKHOUSE_VERSION}
     ulimits:
       nofile:
         soft: 262144
@@ -212,12 +212,40 @@ services:
       TZ: ${TZ}
     volumes:
       - clickhouse-data:/var/lib/clickhouse
-      - ${DIR_LOGS}/clickhouse:/var/log/clickhouse-server
       - ${DIR_SERVICES}/clickhouse/config.d:/etc/clickhouse-server/config.d:ro
       - ${DIR_SERVICES}/clickhouse/users.d:/etc/clickhouse-server/users.d:ro
     hostname: clickhouse
     ports:
       - "${CLICKHOUSE_PORT}:8123"
+    networks:
+      - default
+    restart: unless-stopped
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "1"
+
+  kafka:
+    image: apache/kafka:${KAFKA_VERSION}
+    environment:
+      TZ: ${TZ}
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_LOG_RETENTION_MINUTES: 10
+      KAFKA_NUM_PARTITIONS: 3
+    hostname: kafka
+    ports:
+      - "${KAFKA_PORT}:9092"
     networks:
       - default
     restart: unless-stopped

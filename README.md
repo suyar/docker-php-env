@@ -33,6 +33,7 @@
 8. elasticsearch:7.17.25（官方镜像）
 9. kibana:7.17.25（官方镜像）
 10. clickhouse-server:24.8（官方镜像）
+11. kafka:3.8.1（官方镜像）
 
 # 目录
 
