@@ -57,7 +57,8 @@
 ```
 /
 ├── logs                        日志存放目录
-├── services
+├── data                        数据存放目录
+├── config
 │   ├── clickhouse              ClickHouse 配置目录
 │   ├── elasticsearch           Elasticsearch 配置目录
 │   ├── mongodb                 MongoDB 配置目录
