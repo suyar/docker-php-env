@@ -6,8 +6,5 @@
 
     <logger>
         <level>warning</level>
-        <log></log>
-        <errorlog></errorlog>
-        <console>true</console>
     </logger>
 </clickhouse>

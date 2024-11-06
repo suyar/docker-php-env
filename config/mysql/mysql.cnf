@@ -1,9 +1,3 @@
-[client]
-default-character-set   = utf8mb4
-
-[mysql]
-default-character-set   = utf8mb4
-
 [mysqld]
 sql-mode                = NO_ENGINE_SUBSTITUTION,STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE,ERROR_FOR_DIVISION_BY_ZERO
 authentication-policy   = caching_sha2_password
@@ -12,6 +6,6 @@ collation-server        = utf8mb4_general_ci
 skip-log-bin
 slow-query-log          = ON
 long-query-time         = 1
-slow-query-log-file     = /var/lib/mysql/slow.log
-log-error               = /var/lib/mysql/error.log
+slow-query-log-file     = /var/log/mysql/slow.log
+log-error               = /var/log/mysql/error.log
 default-time-zone       = 'Asia/Shanghai'

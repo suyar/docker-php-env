@@ -5,26 +5,28 @@ set -eu
 # 脚本所在目录
 CWD=$(dirname $(readlink -f "$0"))
 # 相关目录
-DIR_LOGS=${CWD}/logs
-DIR_SERVICES=${CWD}/services
+DIR_CONFIG=$CWD/config
+DIR_DATA=$CWD/data
+DIR_LOGS=$CWD/logs
 
 # 输出
 message() {
     if [[ $# -lt 1 ]]; then
+        echo -e "> ------------------------------------------------"
         return
     fi
 
-    echo -e "# $1"
+    echo -e "> $1"
 }
 
-# 初始化 docker-compose.yml 和 .env 文件
+# 初始化 docker-compose.yml 和 .env
 init_startup_files() {
     local compose_file_example=$CWD/docker-compose.yml.example
     local compose_file=$CWD/docker-compose.yml
     local env_file_example=$CWD/.env.example
     local env_file=$CWD/.env
 
-    message "正在初始化 docker-compose.yml"
+    message "初始化 docker-compose.yml"
     if [[ -f $compose_file ]]; then
         message "${compose_file} 文件已存在"
     else
@@ -32,9 +34,9 @@ init_startup_files() {
         message "${compose_file} 初始化成功"
     fi
 
-    message "---------------------------------------------"
+    message
 
-    message "正在初始化 .env"
+    message "初始化 .env"
     if [[ -f $env_file ]]; then
         message "${env_file} 文件已存在"
     else
@@ -43,80 +45,149 @@ init_startup_files() {
     fi
 }
 
-# 初始化日志
-init_logs() {
-    message "正在初始化 ${DIR_LOGS}"
-    chmod 777 $DIR_LOGS
-    message "$DIR_LOGS 初始化成功"
-}
-
-# 初始化 DIR_SERVICES
-init_services() {
+# 初始化配置
+init_config() {
     if [[ $# -lt 1 ]]; then
-        message "正在初始化 ${DIR_SERVICES}"
-        local p=$DIR_SERVICES
-        chmod 777 $DIR_SERVICES
-        message "处理目录 chmod 777 ${DIR_SERVICES}"
+        message "初始化配置"
+        local p=$DIR_CONFIG
     else
         local p=$1
     fi
 
     if [[ ! -d $p ]]; then
-        message "${p} 不是有效的目录"
         return
     fi
 
-    # message "遍历目录 ${p}"
     for file in `ls -A ${p}`
     do
         local item=$p/$file
         if [[ -d $item ]]; then
-            message "处理目录 chmod 777 ${item}"
-            chmod 777 $item
-            init_services $item
+            init_config $item
         elif [[ -f $item && ".gitignore" != "$file" ]]; then
-            message "处理文件 chmod 644 ${item}"
-            chmod 644 $item
+            message "处理文件 ${item}"
+            chmod 0644 $item
         fi
     done
+}
+
+# 初始化服务
+init_services() {
+    message "初始化 mysql"
+    mkdir -p $DIR_DATA/mysql $DIR_LOGS/mysql
+    chown 999:999 $DIR_DATA/mysql $DIR_LOGS/mysql
+    chmod 1777 $DIR_DATA/mysql $DIR_LOGS/mysql
+
+    message "初始化 redis"
+    mkdir -p $DIR_DATA/redis
+    chown 999:999 $DIR_DATA/redis
+    chmod 1777 $DIR_DATA/redis
+
+    message "初始化 php"
+    mkdir -p \
+        $DIR_DATA/composer \
+        $DIR_LOGS/php83/supervisor \
+        $DIR_LOGS/php82/supervisor \
+        $DIR_LOGS/php81/supervisor \
+        $DIR_LOGS/php80/supervisor \
+        $DIR_LOGS/php74/supervisor \
+        $DIR_LOGS/php73/supervisor \
+        $DIR_LOGS/php83/log \
+        $DIR_LOGS/php82/log \
+        $DIR_LOGS/php81/log \
+        $DIR_LOGS/php80/log \
+        $DIR_LOGS/php74/log \
+        $DIR_LOGS/php73/log
+    chmod 0777 \
+        $DIR_DATA/composer \
+        $DIR_LOGS/php83/supervisor \
+        $DIR_LOGS/php82/supervisor \
+        $DIR_LOGS/php81/supervisor \
+        $DIR_LOGS/php80/supervisor \
+        $DIR_LOGS/php74/supervisor \
+        $DIR_LOGS/php73/supervisor \
+        $DIR_LOGS/php83/log \
+        $DIR_LOGS/php82/log \
+        $DIR_LOGS/php81/log \
+        $DIR_LOGS/php80/log \
+        $DIR_LOGS/php74/log \
+        $DIR_LOGS/php73/log
+
+    message "初始化 nginx"
+    mkdir -p $DIR_LOGS/nginx
+    chown 101:101 $DIR_LOGS/nginx
+    chmod 1777 $DIR_LOGS/nginx
+
+    message "初始化 rabbitmq"
+    mkdir -p $DIR_DATA/rabbitmq $DIR_LOGS/rabbitmq
+    chown 999:999 $DIR_DATA/rabbitmq $DIR_LOGS/rabbitmq
+    chmod 1777 $DIR_DATA/rabbitmq $DIR_LOGS/rabbitmq
+
+    message "初始化 mongodb"
+    mkdir -p $DIR_DATA/mongodb $DIR_LOGS/mongodb
+    chown 999:999 $DIR_DATA/mongodb $DIR_LOGS/mongodb
+    chmod 1777 $DIR_DATA/mongodb $DIR_LOGS/mongodb
+
+    message "初始化 elasticsearch"
+    mkdir -p $DIR_DATA/elasticsearch $DIR_LOGS/elasticsearch
+    chown 1000:1000 $DIR_DATA/elasticsearch $DIR_LOGS/elasticsearch
+    chmod 1777 $DIR_DATA/elasticsearch $DIR_LOGS/elasticsearch
+
+    message "初始化 clickhouse"
+    mkdir -p $DIR_DATA/clickhouse $DIR_LOGS/clickhouse
+    chown 101:101 $DIR_DATA/clickhouse $DIR_LOGS/clickhouse
+    chmod ugo+Xrw $DIR_DATA/clickhouse $DIR_LOGS/clickhouse
+
+    message "初始化 kafka"
+    mkdir -p $DIR_DATA/kafka
+    chown 1000:1000 $DIR_DATA/kafka
+    chmod 1777 $DIR_DATA/kafka
 }
 
 # 清空数据
 clean_data() {
     local compose_file=$CWD/docker-compose.yml
-    message "正在清理卷 docker compose -f ${compose_file} down --volumes"
-    sudo docker compose -f "${compose_file}" down --volumes
+    message "正在停止 docker compose -f ${compose_file} down --volumes"
+    docker compose -f "${compose_file}" down --volumes
+
+    message "清理数据 ${DIR_DATA}"
+    for file in `ls -A ${DIR_DATA}`
+    do
+        if [[ ".gitignore" != "$file" ]]; then
+            message "删除 ${DIR_DATA}/${file}"
+            rm -rf $DIR_DATA/$file
+        fi
+    done
 }
 
 # 清空日志
 clean_logs() {
-    message "正在清理日志 ${DIR_LOGS}"
+    message "清理日志 ${DIR_LOGS}"
     for file in `ls -A ${DIR_LOGS}`
     do
         if [[ ".gitignore" != "$file" ]]; then
-            message "正在删除 rm -rf ${DIR_LOGS}/${file}"
-            rm -rf "${DIR_LOGS}/${file}"
+            message "删除 ${DIR_LOGS}/${file}"
+            rm -rf $DIR_LOGS/$file
         fi
     done
 }
 
 init() {
-    message "---------------------------------------------"
-    init_startup_files
-    message "---------------------------------------------"
-    init_logs
-    message "---------------------------------------------"
+    message
+    init_config
+    message
     init_services
-    message "---------------------------------------------"
+    message
+    init_startup_files
+    message
     message "初始化完成"
 }
 
 clean() {
-    message "---------------------------------------------"
+    message
     clean_data
-    message "---------------------------------------------"
+    message
     clean_logs
-    message "---------------------------------------------"
+    message
     message "数据已清空"
 }
 

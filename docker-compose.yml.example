@@ -8,15 +8,15 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_ROOT_HOST: "%"
     volumes:
-      - mysql-data:/var/lib/mysql
-      - ${DIR_SERVICES}/mysql/my.cnf:/etc/mysql/my.cnf:ro
-      - ${DIR_SERVICES}/mysql/docker.cnf:/etc/mysql/conf.d/docker.cnf:ro
-      - ${DIR_SERVICES}/mysql/zz-custom.cnf:/etc/mysql/conf.d/zz-custom.cnf:ro
+      - ${DIR_DATA}/mysql:/var/lib/mysql
+      - ${DIR_LOGS}/mysql:/var/log/mysql
+      - ${DIR_CONFIG}/mysql/mysql.cnf:/etc/mysql/conf.d/mysql.cnf:ro
     hostname: mysql
+    container_name: dpe_mysql
     ports:
       - "${MYSQL_HOST_PORT}:3306"
     networks:
-      - default
+      - dpe
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -29,14 +29,15 @@ services:
     environment:
       TZ: ${TZ}
     volumes:
-      - redis-data:/data
-      - ${DIR_SERVICES}/redis/redis.conf:/etc/redis.conf:ro
+      - ${DIR_DATA}/redis:/data
+      - ${DIR_CONFIG}/redis/redis.conf:/etc/redis.conf:ro
     hostname: redis
+    container_name: dpe_redis
     ports:
       - "${REDIS_HOST_PORT}:6379"
-    command: [ "redis-server", "/etc/redis.conf" ]
+    command: [ "redis-server", "/etc/redis.conf", "--requirepass", "${REDIS_PASSWORD}" ]
     networks:
-      - default
+      - dpe
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -49,11 +50,12 @@ services:
     environment:
       TZ: ${TZ}
     hostname: memcached
+    container_name: dpe_memcached
     ports:
       - "${MEMCACHED_HOST_PORT}:11211"
     command: [ "memcached", "-m", "${MEMCACHED_MEMORY}" ]
     networks:
-      - default
+      - dpe
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -68,18 +70,20 @@ services:
       COMPOSER_ALLOW_SUPERUSER: 1
       COMPOSER_HOME: /tmp/composer
     volumes:
-      - ${DIR_SERVICES}/php83/php.ini:/usr/local/etc/php/php.ini:ro
-      - ${DIR_SERVICES}/php83/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf:ro
-      - ${DIR_SERVICES}/php83/supervisor.conf:/etc/supervisor/conf.d/service.conf:ro
+      - ${DIR_CONFIG}/php83/php.ini:/usr/local/etc/php/php.ini:ro
+      - ${DIR_CONFIG}/php83/php-fpm.conf:/usr/local/etc/php-fpm.d/zz-custom.conf:ro
+      - ${DIR_CONFIG}/php83/supervisor.conf:/etc/supervisor/conf.d/service.conf:ro
       - ${DIR_LOGS}/php83/supervisor:/var/log/supervisor
       - ${DIR_LOGS}/php83/log:/var/log/php
-      - ${DIR_SOURCE}:/www
+      - ${DIR_DATA}/composer:/tmp/composer
+      - ${DIR_WWW}:/www
     working_dir: /www
     hostname: php83
+    container_name: dpe_php83
     cap_add:
       - SYS_PTRACE
     networks:
-      - default
+      - dpe
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -92,18 +96,19 @@ services:
     environment:
       TZ: ${TZ}
     volumes:
-      - ${DIR_SERVICES}/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ${DIR_SERVICES}/nginx/conf.d:/etc/nginx/conf.d:ro
-      - ${DIR_SERVICES}/nginx/ssl:/etc/nginx/ssl:ro
+      - ${DIR_CONFIG}/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${DIR_CONFIG}/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ${DIR_CONFIG}/nginx/ssl:/etc/nginx/ssl:ro
       - ${DIR_LOGS}/nginx:/var/log/nginx
-      - ${DIR_SOURCE}:/www
+      - ${DIR_WWW}:/www
     working_dir: /www
     hostname: nginx
+    container_name: dpe_nginx
     ports:
       - "${NGINX_HTTP_HOST_PORT}:80"
       - "${NGINX_HTTPS_HOST_PORT}:443"
     networks:
-      default:
+      dpe:
         aliases:
           - example.laravel.local
     restart: unless-stopped
@@ -120,15 +125,17 @@ services:
       RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER}
       RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS}
     volumes:
-      - rabbitmq-data:/var/lib/rabbitmq
-      - ${DIR_SERVICES}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
-      - ${DIR_SERVICES}/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
+      - ${DIR_DATA}/rabbitmq:/var/lib/rabbitmq
+      - ${DIR_LOGS}/rabbitmq:/var/log/rabbitmq
+      - ${DIR_CONFIG}/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ${DIR_CONFIG}/rabbitmq/enabled_plugins:/etc/rabbitmq/enabled_plugins:ro
     hostname: rabbitmq
+    container_name: dpe_rabbitmq
     ports:
       - "${RABBITMQ_HOST_PORT}:5672"
       - "${RABBITMQ_MANAGE_HOST_PORT}:15672"
     networks:
-      - default
+      - dpe
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -136,21 +143,23 @@ services:
         max-size: "10m"
         max-file: "1"
 
-  mongo:
+  mongodb:
     image: mongo:${MONGODB_VERSION}
     environment:
       TZ: ${TZ}
       MONGO_INITDB_ROOT_USERNAME: ${MONGODB_INITDB_ROOT_USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_INITDB_ROOT_PASSWORD}
     volumes:
-      - mongo-data:/data/db
-      - ${DIR_SERVICES}/mongodb/mongod.conf:/etc/mongo/mongod.conf:ro
+      - ${DIR_DATA}/mongodb:/data/db
+      - ${DIR_LOGS}/mongodb:/var/log/mongodb
+      - ${DIR_CONFIG}/mongodb/mongod.conf:/etc/mongo/mongod.conf:ro
     hostname: mongodb
+    container_name: dpe_mongodb
     ports:
       - "${MONGODB_HOST_PORT}:27017"
     command: [ "--config", "/etc/mongo/mongod.conf" ]
     networks:
-      - default
+      - dpe
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -160,19 +169,28 @@ services:
 
   elasticsearch:
     image: elasticsearch:${ELASTICSEARCH_VERSION}
+    ulimits:
+      nofile:
+        soft: 65535
+        hard: 65535
+      memlock:
+        soft: -1
+        hard: -1
     environment:
       - TZ=${TZ}
       - discovery.type=single-node
+      - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
-      - elasticsearch-data:/usr/share/elasticsearch/data
-      - ${DIR_SERVICES}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ${DIR_DATA}/elasticsearch:/usr/share/elasticsearch/data
+      - ${DIR_LOGS}/elasticsearch:/usr/share/elasticsearch/logs
+      - ${DIR_CONFIG}/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
     hostname: elasticsearch
-    user: 1000:1000
+    container_name: dpe_elasticsearch
     ports:
       - "${ELASTICSEARCH_HOST_PORT}:9200"
     networks:
-      - default
+      - dpe
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -187,10 +205,11 @@ services:
       ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
       I18N_LOCALE: ${kIBANA_I18N_LOCALE}
     hostname: kibana
+    container_name: dpe_kibana
     ports:
       - "${kIBANA_HOST_PORT}:5601"
     networks:
-      - default
+      - dpe
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -211,14 +230,16 @@ services:
     environment:
       TZ: ${TZ}
     volumes:
-      - clickhouse-data:/var/lib/clickhouse
-      - ${DIR_SERVICES}/clickhouse/config.d:/etc/clickhouse-server/config.d:ro
-      - ${DIR_SERVICES}/clickhouse/users.d:/etc/clickhouse-server/users.d:ro
+      - ${DIR_DATA}/clickhouse:/var/lib/clickhouse
+      - ${DIR_LOGS}/clickhouse:/var/log/clickhouse-server
+      - ${DIR_CONFIG}/clickhouse/config.d:/etc/clickhouse-server/config.d:ro
+      - ${DIR_CONFIG}/clickhouse/users.d:/etc/clickhouse-server/users.d:ro
     hostname: clickhouse
+    container_name: dpe_clickhouse
     ports:
       - "${CLICKHOUSE_PORT}:8123"
     networks:
-      - default
+      - dpe
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -231,7 +252,6 @@ services:
     environment:
       TZ: ${TZ}
       KAFKA_NODE_ID: 1
-      KAFKA_BROKER_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://:9092
@@ -244,11 +264,15 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
       KAFKA_LOG_RETENTION_MINUTES: 10
       KAFKA_NUM_PARTITIONS: 3
+      KAFKA_LOG_DIRS: "/data/kafka"
+    volumes:
+      - ${DIR_DATA}/kafka:/data/kafka
     hostname: kafka
+    container_name: dpe_kafka
     ports:
       - "${KAFKA_PORT}:9092"
     networks:
-      - default
+      - dpe
     restart: unless-stopped
     logging:
       driver: "json-file"
@@ -256,14 +280,6 @@ services:
         max-size: "10m"
         max-file: "1"
 
-volumes:
-  mysql-data:
-  redis-data:
-  rabbitmq-data:
-  mongo-data:
-  elasticsearch-data:
-  clickhouse-data:
-
 networks:
-  default:
+  dpe:
     driver: bridge
