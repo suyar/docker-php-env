@@ -1,10 +1,82 @@
 <clickhouse>
-    <!-- Listen wildcard address to allow accepting connections from other containers and host network. -->
-    <!-- <listen_host>::</listen_host> -->
     <listen_host>0.0.0.0</listen_host>
     <listen_try>1</listen_try>
 
     <logger>
         <level>warning</level>
+        <size>10M</size>
+        <count>10</count>
     </logger>
+
+    <timezone>Asia/Shanghai</timezone>
+
+    <query_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </query_log>
+
+    <trace_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </trace_log>
+
+    <query_thread_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </query_thread_log>
+
+    <query_views_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </query_views_log>
+
+    <part_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </part_log>
+
+    <text_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+        <level>warning</level>
+    </text_log>
+
+    <metric_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </metric_log>
+
+    <error_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </error_log>
+
+    <asynchronous_metric_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </asynchronous_metric_log>
+
+    <opentelemetry_span_log>
+        <engine>
+            engine MergeTree
+            partition by toYYYYMM(finish_date)
+            order by (finish_date, finish_time_us, trace_id)
+            ttl event_date + INTERVAL 7 DAY DELETE
+        </engine>
+    </opentelemetry_span_log>
+
+    <crash_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </crash_log>
+
+    <processors_profile_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </processors_profile_log>
+
+    <asynchronous_insert_log>
+        <ttl>event_date + INTERVAL 3 DAY DELETE</ttl>
+    </asynchronous_insert_log>
+
+    <backup_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </backup_log>
+
+    <s3queue_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </s3queue_log>
+
+    <blob_storage_log>
+        <ttl>event_date + INTERVAL 7 DAY DELETE</ttl>
+    </blob_storage_log>
 </clickhouse>
