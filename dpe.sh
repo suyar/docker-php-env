@@ -139,7 +139,7 @@ init_services() {
 
     message "初始化 kafka"
     mkdir -p $DIR_DATA/kafka
-    chown 1000:1000 $DIR_DATA/kafka
+    chown 1001:1001 $DIR_DATA/kafka
     chmod 1777 $DIR_DATA/kafka
 }
 
